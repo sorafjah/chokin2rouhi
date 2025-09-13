@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>貯金と浪費</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div id="auth-container" class="min-h-screen flex flex-col items-center justify-center">
+  <h1 class="text-3xl font-bold mb-4">貯金と浪費</h1>
+  <input id="nickname" placeholder="ニックネーム" class="border p-2 mb-4">
+  <button id="login-btn" class="bg-teal-500 text-white px-4 py-2 rounded">はじめる</button>
+</div>
+
+<div id="app-container" class="hidden p-4 max-w-md mx-auto">
+  <h2 id="date-display" class="text-xl font-bold mb-2"></h2>
+  <input type="number" id="amount" placeholder="金額" class="border p-2 mb-2 w-full">
+  <button id="type-toggle" class="bg-green-100 text-green-800 px-4 py-2 mb-2 w-full">収入</button>
+  <button id="save-btn" class="bg-teal-500 text-white px-4 py-2 w-full">保存する</button>
+  <div class="mt-4">
+    <p>今月の合計: <span id="monthly-total">0円</span></p>
+    <p>総合計: <span id="overall-total">0円</span></p>
+  </div>
+  <ul id="history-list" class="mt-4"></ul>
+  <button id="logout-btn" class="mt-4 text-gray-500">ログアウト</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+// --- Firebase 設定 ---
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let currentUser = null;
+let isIncome = true;
+
+// --- DOM ---
+const authContainer = document.getElementById('auth-container');
+const appContainer = document.getElementById('app-container');
+const nicknameInput = document.getElementById('nickname');
+const loginBtn = document.getElementById('login-btn');
+const logoutBtn = document.getElementById('logout-btn');
+const amountInput = document.getElementById('amount');
+const typeToggle = document.getElementById('type-toggle');
+const saveBtn = document.getElementById('save-btn');
+const monthlyTotalEl = document.getElementById('monthly-total');
+const overallTotalEl = document.getElementById('overall-total');
+const historyList = document.getElementById('history-list');
+const dateDisplay = document.getElementById('date-display');
+
+let currentDate = new Date();
+
+// --- ログイン ---
+loginBtn.addEventListener('click', async () => {
+  const nickname = nicknameInput.value.trim();
+  if(!nickname) return alert("ニックネームを入力");
+  await signInAnonymously(auth);
+  currentUser = auth.currentUser;
+  // ユーザー情報作成
+  await setDoc(doc(db, "users", currentUser.uid), { nickname });
+  authContainer.classList.add('hidden');
+  appContainer.classList.remove('hidden');
+  updateDateDisplay();
+  listenTransactions();
+});
+
+// --- ログアウト ---
+logoutBtn.addEventListener('click', () => {
+  currentUser = null;
+  auth.signOut();
+  authContainer.classList.remove('hidden');
+  appContainer.classList.add('hidden');
+});
+
+// --- 日付表示 ---
+function updateDateDisplay() {
+  const y = currentDate.getFullYear();
+  const m = currentDate.getMonth()+1;
+  const d = currentDate.getDate();
+  dateDisplay.textContent = `${m}月${d}日`;
+}
+
+// --- 種類切替 ---
+typeToggle.addEventListener('click', () => {
+  isIncome = !isIncome;
+  typeToggle.textContent = isIncome ? "収入" : "支出";
+  typeToggle.className = isIncome ? "bg-green-100 text-green-800 px-4 py-2 mb-2 w-full" : "bg-red-500 text-white px-4 py-2 mb-2 w-full";
+});
+
+// --- 保存 ---
+saveBtn.addEventListener('click', async () => {
+  const val = parseInt(amountInput.value);
+  if(!val || val <=0) return alert("金額を入力");
+  await addDoc(collection(db, "transactions"), {
+    userId: currentUser.uid,
+    amount: val,
+    type: isIncome ? 'income' : 'expense',
+    date: currentDate.toISOString().split('T')[0],
+    createdAt: serverTimestamp()
+  });
+  amountInput.value = "";
+});
+
+// --- データ監視 ---
+function listenTransactions() {
+  const q = query(collection(db, "transactions"), where("userId", "==", currentUser.uid));
+  onSnapshot(q, (snap) => {
+    let monthlyTotal = 0, overallTotal = 0;
+    historyList.innerHTML = "";
+    snap.forEach(docSnap => {
+      const t = docSnap.data();
+      const li = document.createElement('li');
+      li.textContent = `${t.date} ${t.type} ${t.amount}円`;
+      historyList.appendChild(li);
+      overallTotal += t.type==='income'? t.amount: -t.amount;
+      const today = new Date();
+      const monthStart = new Date(today.getFullYear(), today.getMonth(),1);
+      if(new Date(t.date)>=monthStart) monthlyTotal += t.type==='income'? t.amount: -t.amount;
+    });
+    monthlyTotalEl.textContent = monthlyTotal + "円";
+    overallTotalEl.textContent = overallTotal + "円";
+  });
+}
+</script>
+</body>
+</html>
