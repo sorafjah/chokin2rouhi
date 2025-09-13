@@ -2,19 +2,30 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>貯金と浪費</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <h1>貯金と浪費</h1>
-  <div id="output"></div>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+  <div class="bg-white p-6 rounded-2xl shadow-md w-80">
+    <h1 class="text-2xl font-bold text-center mb-4">貯金と浪費</h1>
+    <input id="amount" type="number" placeholder="金額を入力"
+      class="w-full p-2 mb-4 border rounded-lg text-center text-xl" />
+    <button id="saveBtn"
+      class="w-full bg-teal-500 text-white py-2 rounded-lg hover:bg-teal-600 transition">
+      保存
+    </button>
 
-  <!-- Firebase SDK CDN (モジュラー版) -->
+    <h2 class="text-lg font-bold mt-6 mb-2">履歴</h2>
+    <ul id="records" class="space-y-1 text-gray-700 text-right"></ul>
+  </div>
+
+  <!-- Firebase SDK -->
   <script type="module">
-    // 必要な関数をインポート
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } 
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // Firebase 設定
     const firebaseConfig = {
@@ -32,15 +43,40 @@
     const db = getFirestore(app);
 
     // 匿名ログイン
-    signInAnonymously(auth)
-      .then(() => {
-        console.log("ログイン成功");
-        document.getElementById("output").innerText = "Firebase に接続しました！";
-      })
-      .catch((error) => {
-        console.error("ログイン失敗", error);
-        document.getElementById("output").innerText = "接続エラー: " + error.message;
+    signInAnonymously(auth).then(() => {
+      console.log("ログイン成功");
+    }).catch((error) => {
+      console.error("ログイン失敗", error);
+    });
+
+    // 保存処理
+    document.getElementById("saveBtn").addEventListener("click", async () => {
+      const amount = document.getElementById("amount").value;
+      if (!amount) return alert("金額を入力してください");
+
+      try {
+        await addDoc(collection(db, "records"), {
+          amount: Number(amount),
+          createdAt: serverTimestamp()
+        });
+        document.getElementById("amount").value = "";
+      } catch (e) {
+        console.error("保存エラー: ", e);
+      }
+    });
+
+    // Firestore から履歴取得（リアルタイム反映）
+    const q = query(collection(db, "records"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (snapshot) => {
+      const list = document.getElementById("records");
+      list.innerHTML = "";
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const li = document.createElement("li");
+        li.textContent = `${data.amount} 円`;
+        list.appendChild(li);
       });
+    });
   </script>
 </body>
 </html>
