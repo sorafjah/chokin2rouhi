@@ -9,12 +9,13 @@
   <h1>貯金と浪費</h1>
   <div id="output"></div>
 
-  <!-- Firebase SDK (CDNから読み込み) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+  <!-- Firebase SDK CDN (モジュラー版) -->
+  <script type="module">
+    // 必要な関数をインポート
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  <script>
     // Firebase 設定
     const firebaseConfig = {
       apiKey: "AIzaSyDB-RxYhEGAs6EJPbBXcHaFMSZiysIpnl8",
@@ -26,18 +27,19 @@
     };
 
     // 初期化
-    const app = firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
     // 匿名ログイン
-    auth.signInAnonymously()
+    signInAnonymously(auth)
       .then(() => {
         console.log("ログイン成功");
         document.getElementById("output").innerText = "Firebase に接続しました！";
       })
       .catch((error) => {
         console.error("ログイン失敗", error);
+        document.getElementById("output").innerText = "接続エラー: " + error.message;
       });
   </script>
 </body>
