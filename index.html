@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>貯金と浪費。</title>
+    
+    <link rel="apple-touch-icon" href="chokin.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -42,7 +44,6 @@
 </head>
 <body class="bg-gray-50 text-gray-800">
 
-    <!-- ログイン画面 -->
     <div id="auth-container" class="min-h-screen flex items-center justify-center bg-teal-400 p-4">
         <div class="bg-white w-full max-w-sm p-8 rounded-2xl shadow-lg text-center">
             <h1 id="app-title" class="text-3xl font-bold text-teal-500 mb-2">貯金と浪費。</h1>
@@ -57,21 +58,18 @@
         </div>
     </div>
 
-    <!-- アプリ本体 -->
     <div id="app-container" class="hidden">
         <header class="bg-teal-500 text-white p-4 shadow-md sticky top-0 z-10">
             <h1 class="text-xl font-bold text-center" id="main-title">貯金と浪費。</h1>
         </header>
 
         <main class="p-4 max-w-md mx-auto">
-            <!-- 日付ナビゲーション -->
             <div class="flex justify-between items-center my-4">
                 <button id="prev-day" class="p-2 text-teal-500 text-2xl"><i class="fas fa-chevron-left"></i></button>
                 <h2 id="current-date" class="text-xl font-semibold"></h2>
                 <button id="next-day" class="p-2 text-teal-500 text-2xl"><i class="fas fa-chevron-right"></i></button>
             </div>
 
-            <!-- 入力フォーム -->
             <div class="bg-white p-6 rounded-2xl shadow-lg">
                 <div class="grid grid-cols-2 gap-3 mb-4">
                     <button class="btn-amount btn-amount-unselected" data-amount="1000">1000円</button>
@@ -95,7 +93,6 @@
                 <p id="entry-error" class="text-red-500 mt-2 text-sm h-5 text-center"></p>
             </div>
 
-            <!-- 合計金額表示 -->
             <div class="grid grid-cols-2 gap-4 my-6">
                 <div class="bg-purple-100 text-purple-800 p-4 rounded-xl shadow-md text-center">
                     <p class="font-semibold">今月の合計</p>
@@ -107,7 +104,6 @@
                 </div>
             </div>
 
-            <!-- 記録リスト -->
             <div>
                 <h3 id="history-title" class="text-lg font-semibold mb-2 pb-1 border-b-2 border-teal-400"></h3>
                 <ul id="history-list"></ul>
@@ -121,7 +117,6 @@
         </footer>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, setDoc, getDoc, deleteDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
