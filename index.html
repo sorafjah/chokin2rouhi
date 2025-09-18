@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- ▼ここから追加：アプリのように動作させるための設定 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="貯金と浪費。">
+    <!-- ▲ここまで追加 -->
     <title>貯金と浪費。</title>
     
     <link rel="apple-touch-icon" href="chokin.jpg">
@@ -231,16 +236,24 @@
                 const userCredential = await signInAnonymously(auth);
                 const uid = userCredential.user.uid;
                 currentUserId = uid;
-                // ユーザー情報を作成（存在しなければ）
+
+                // ユーザー情報を作成または更新
                 const userDocRef = doc(db, 'users', uid);
                 const userSnap = await getDoc(userDocRef);
                 const startDay = parseInt(startDaySelect.value) || 1;
+                
                 if (!userSnap.exists()){
+                    // 新規ユーザーの場合、ドキュメントを新規作成
                     await setDoc(userDocRef, { nickname, startDay, createdAt: serverTimestamp() });
                     userSettings = { nickname, startDay };
                 } else {
+                    // 既存ユーザーの場合、月の開始日を更新
+                    await setDoc(userDocRef, { startDay }, { merge: true });
+                    // DBから読み込んだ設定に、今回選択した開始日を上書きして使用する
                     userSettings = userSnap.data();
+                    userSettings.startDay = startDay; 
                 }
+
                 localStorage.setItem('okane-app-userid', uid);
                 initializeAppState(uid);
             }catch(err){ console.error(err); authError.textContent = 'ログインに失敗しました。'; setTimeout(()=>authError.textContent='',3000); }
@@ -295,19 +308,43 @@
         }
 
         function updateSummary(transactions){
-            const now = new Date();
+            const viewDate = currentDate; // 表示しているカレンダーの日付を基準にする
             const startDay = userSettings.startDay || 1;
-            let periodStartYear = now.getFullYear();
-            let periodStartMonth = now.getMonth();
-            if (now.getDate() < startDay){ periodStartMonth -= 1; if (periodStartMonth < 0){ periodStartMonth = 11; periodStartYear -= 1; } }
-            const periodStartDate = new Date(periodStartYear, periodStartMonth, startDay,0,0,0,0);
-            let monthlyTotal = 0; let overallTotal = 0;
+            
+            // 表示日を基準に、その月（期間）の開始日を計算する
+            let periodStartYear = viewDate.getFullYear();
+            let periodStartMonth = viewDate.getMonth();
+            if (viewDate.getDate() < startDay){ 
+                periodStartMonth -= 1; 
+                if (periodStartMonth < 0){ 
+                    periodStartMonth = 11; 
+                    periodStartYear -= 1; 
+                } 
+            }
+            const periodStartDate = new Date(periodStartYear, periodStartMonth, startDay, 0, 0, 0, 0);
+
+            // 期間の終了日（次の期間の開始日）を計算する
+            let periodEndYear = periodStartYear;
+            let periodEndMonth = periodStartMonth + 1;
+            if (periodEndMonth > 11) {
+                periodEndMonth = 0;
+                periodEndYear += 1;
+            }
+            const periodEndDate = new Date(periodEndYear, periodEndMonth, startDay, 0, 0, 0, 0);
+
+            let monthlyTotal = 0; 
+            let overallTotal = 0;
             transactions.forEach(t=>{
                 const amount = t.type === 'income' ? t.amount : -t.amount;
                 overallTotal += amount;
                 const parts = t.date.split('-');
-                const transactionDate = new Date(parts[0], parts[1]-1, parts[2]);
-                if (transactionDate >= periodStartDate) monthlyTotal += amount;
+                // タイムゾーンの問題を避けるため、時刻を0に設定
+                const transactionDate = new Date(parts[0], parts[1]-1, parts[2], 0, 0, 0, 0);
+                
+                // 取引日が計算した期間内にあるかチェック
+                if (transactionDate >= periodStartDate && transactionDate < periodEndDate) {
+                    monthlyTotal += amount;
+                }
             });
             monthlyTotalEl.textContent = `${monthlyTotal.toLocaleString()}円`;
             overallTotalEl.textContent = `${overallTotal.toLocaleString()}円`;
@@ -377,3 +414,4 @@
     </script>
 </body>
 </html>
+
