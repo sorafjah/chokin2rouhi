@@ -10,8 +10,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#2dd4bf">
     <link rel="manifest" id="manifest">
-    
     <link rel="apple-touch-icon" href="chokin.jpg">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -20,18 +20,15 @@
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
         }
+        /* ボタンのスタイル調整 */
         .btn-amount {
             width: 100%;
-            padding-top: 0.75rem;
-            padding-bottom: 0.75rem;
+            padding: 0.75rem 0;
             font-size: 1.125rem;
-            line-height: 1.75rem;
             font-weight: 600;
-            border-width: 1px;
             border-radius: 0.5rem;
-            transition-property: all;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 200ms;
+            transition: all 0.2s;
+            border: 1px solid transparent;
         }
         .btn-amount-selected {
             background-color: rgb(45, 212, 191);
@@ -42,7 +39,6 @@
             background-color: rgb(207, 250, 254);
             color: rgb(21, 94, 117);
             border-color: rgb(165, 243, 252);
-            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
         }
         .btn-amount-unselected:hover { background-color: rgb(165, 243, 252); }
         .hidden { display: none; }
@@ -50,33 +46,24 @@
 </head>
 <body class="bg-gray-50 text-gray-800">
 
-    <div id="auth-container" class="min-h-screen flex items-center justify-center bg-teal-400 p-4">
-        <div class="bg-white w-full max-w-sm p-8 rounded-2xl shadow-lg text-center">
-            <h1 id="app-title" class="text-3xl font-bold text-teal-500 mb-2">貯金と浪費。</h1>
-            <p class="text-gray-500 mb-6">ニックネームを入力してはじめよう</p>
-            <input type="text" id="nickname-input" placeholder="ニックネーム" class="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-teal-400">
-            <div class="mb-4 text-left">
-                <label for="start-day-select" class="block text-sm font-medium text-gray-600 mb-1">月の始まりの日</label>
-                <select id="start-day-select" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-teal-400"></select>
-            </div>
-            <button id="login-btn" class="w-full bg-teal-500 text-white py-3 rounded-lg font-semibold hover:bg-teal-600 transition-colors">はじめる</button>
-            <p id="auth-error" class="text-red-500 mt-4 text-sm h-5"></p>
-        </div>
-    </div>
-
-    <div id="app-container" class="hidden">
-        <header class="bg-teal-500 text-white p-4 shadow-md sticky top-0 z-10">
-            <h1 class="text-xl font-bold text-center" id="main-title">貯金と浪費。</h1>
+    <!-- アプリメイン画面（いきなりここから始まります） -->
+    <div id="app-container" class="min-h-screen flex flex-col">
+        <header class="bg-teal-500 text-white p-4 shadow-md sticky top-0 z-10 flex justify-center items-center">
+            <h1 class="text-xl font-bold">貯金と浪費。</h1>
         </header>
 
-        <main class="p-4 max-w-md mx-auto">
+        <main class="flex-grow p-4 max-w-md mx-auto w-full">
+            
+            <!-- 日付操作 -->
             <div class="flex justify-between items-center my-4">
-                <button id="prev-day" class="p-2 text-teal-500 text-2xl"><i class="fas fa-chevron-left"></i></button>
+                <button id="prev-day" class="p-2 text-teal-500 text-2xl w-12 h-12 flex items-center justify-center rounded-full hover:bg-teal-50 transition"><i class="fas fa-chevron-left"></i></button>
                 <h2 id="current-date" class="text-xl font-semibold"></h2>
-                <button id="next-day" class="p-2 text-teal-500 text-2xl"><i class="fas fa-chevron-right"></i></button>
+                <button id="next-day" class="p-2 text-teal-500 text-2xl w-12 h-12 flex items-center justify-center rounded-full hover:bg-teal-50 transition"><i class="fas fa-chevron-right"></i></button>
             </div>
 
-            <div class="bg-white p-6 rounded-2xl shadow-lg">
+            <!-- 入力パネル -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg mb-6">
+                <!-- 金額プリセットボタン -->
                 <div class="grid grid-cols-2 gap-3 mb-4">
                     <button class="btn-amount btn-amount-unselected" data-amount="1000">1000円</button>
                     <button class="btn-amount btn-amount-unselected" data-amount="500">500円</button>
@@ -84,73 +71,71 @@
                     <button class="btn-amount btn-amount-unselected" data-amount="100">100円</button>
                 </div>
 
+                <!-- 金額入力欄 -->
                 <div class="flex items-center justify-center my-5">
-                    <button id="decrease-btn" class="w-12 h-12 bg-blue-500 text-white rounded-full text-2xl font-bold flex items-center justify-center shadow-md">-</button>
-                    <input id="amount-input" type="number" value="0" class="w-32 text-center text-4xl font-bold mx-4 bg-transparent border-none focus:outline-none transition-colors">
-                    <button id="increase-btn" class="w-12 h-12 bg-blue-500 text-white rounded-full text-2xl font-bold flex items-center justify-center shadow-md">+</button>
+                    <button id="decrease-btn" class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full text-2xl font-bold shadow hover:bg-blue-200 transition">-</button>
+                    <input id="amount-input" type="number" value="0" class="w-32 text-center text-4xl font-bold mx-2 bg-transparent border-none focus:outline-none p-0" placeholder="0">
+                    <button id="increase-btn" class="w-12 h-12 bg-blue-500 text-white rounded-full text-2xl font-bold shadow hover:bg-blue-600 transition">+</button>
                 </div>
 
+                <!-- 収支切替・保存ボタン -->
                 <div class="grid grid-cols-2 gap-3">
-                    <button id="type-toggle-btn" class="py-3 text-lg font-semibold rounded-lg transition-all duration-300"></button>
-                    <button id="save-btn" class="bg-teal-500 text-white py-3 text-lg font-semibold rounded-lg hover:bg-teal-600 transition-colors flex items-center justify-center gap-2">
-                        <i class="fas fa-save"></i>保存する
+                    <button id="type-toggle-btn" class="py-3 text-lg font-semibold rounded-lg transition-colors duration-200 bg-green-100 text-green-800">+ 収入</button>
+                    <button id="save-btn" class="bg-teal-500 text-white py-3 text-lg font-semibold rounded-lg hover:bg-teal-600 transition-colors shadow-md flex items-center justify-center gap-2">
+                        <i class="fas fa-save"></i> 記録
                     </button>
                 </div>
-                <p id="entry-error" class="text-red-500 mt-2 text-sm h-5 text-center"></p>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 my-6">
-                <div class="bg-purple-100 text-purple-800 p-4 rounded-xl shadow-md text-center">
-                    <p class="font-semibold">今月の合計</p>
-                    <p id="monthly-total" class="text-2xl font-bold">0円</p>
+            <!-- 集計パネル -->
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-white p-4 rounded-xl shadow-md text-center border-t-4 border-purple-400">
+                    <p class="text-xs text-gray-500 mb-1">今月の合計</p>
+                    <p id="monthly-total" class="text-xl font-bold text-gray-800">0円</p>
                 </div>
-                <div class="bg-green-100 text-green-800 p-4 rounded-xl shadow-md text-center">
-                    <p class="font-semibold">今までの合計</p>
-                    <p id="overall-total" class="text-2xl font-bold">0円</p>
+                <div class="bg-white p-4 rounded-xl shadow-md text-center border-t-4 border-green-400">
+                    <p class="text-xs text-gray-500 mb-1">全期間の合計</p>
+                    <p id="overall-total" class="text-xl font-bold text-gray-800">0円</p>
                 </div>
             </div>
 
+            <!-- 履歴リスト -->
             <div>
-                <h3 id="history-title" class="text-lg font-semibold mb-2 pb-1 border-b-2 border-teal-400"></h3>
-                <ul id="history-list"></ul>
-                <p id="no-records" class="text-gray-500 text-center py-8">今日の記録はありません。</p>
+                <h3 id="history-title" class="text-lg font-bold mb-3 text-gray-700 border-l-4 border-teal-400 pl-3">今日の記録</h3>
+                <ul id="history-list" class="space-y-2"></ul>
+                <div id="no-records" class="text-gray-400 text-center py-10 bg-gray-100 rounded-lg border border-dashed border-gray-300">
+                    <i class="fas fa-pen mb-2 block text-2xl"></i>
+                    まだ記録がありません
+                </div>
             </div>
 
         </main>
 
-        <footer class="text-center p-4">
-            <button id="logout-btn" class="text-xs text-gray-400 hover:underline">ログアウト</button>
+        <!-- 設定・リセット（画面下部） -->
+        <footer class="bg-gray-100 p-6 text-center border-t border-gray-200 mt-auto">
+            <div class="flex flex-col items-center gap-4 max-w-xs mx-auto">
+                <!-- 月の開始日設定 -->
+                <div class="flex items-center gap-2 text-sm text-gray-600 bg-white px-4 py-2 rounded-full shadow-sm">
+                    <label for="start-day-select">月の開始日:</label>
+                    <select id="start-day-select" class="bg-transparent font-bold text-teal-600 focus:outline-none cursor-pointer">
+                        <!-- JSで生成 -->
+                    </select>
+                </div>
+                
+                <!-- データ消去 -->
+                <button id="reset-btn" class="text-xs text-gray-400 hover:text-red-500 transition-colors underline">
+                    データを全て消去してリセット
+                </button>
+            </div>
         </footer>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, setDoc, getDoc, deleteDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    <script>
+        // --- 設定 ---
+        const STORAGE_KEY_DATA = 'simple_kakeibo_v2_data'; // データの保存場所
+        const STORAGE_KEY_CONFIG = 'simple_kakeibo_v2_config'; // 設定の保存場所
 
-        // Firebase 設定（あなたのプロジェクト設定を埋めています）
-        const firebaseConfig = {
-            apiKey: "AIzaSyDB-RxYhEGAs6EJPbBXcHaFMSZiysIpnl8",
-            authDomain: "chokin2rouhi.firebaseapp.com",
-            projectId: "chokin2rouhi",
-            storageBucket: "chokin2rouhi.firebasestorage.app",
-            messagingSenderId: "792323777274",
-            appId: "1:792323777274:web:fbb093da926e5fe1d5df43"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth();
-
-        // DOM 要素
-        const authContainer = document.getElementById('auth-container');
-        const appContainer = document.getElementById('app-container');
-        const loginBtn = document.getElementById('login-btn');
-        const nicknameInput = document.getElementById('nickname-input');
-        const startDaySelect = document.getElementById('start-day-select');
-        const logoutBtn = document.getElementById('logout-btn');
-        const authError = document.getElementById('auth-error');
-        const entryError = document.getElementById('entry-error');
+        // --- DOM 要素 ---
         const currentDateEl = document.getElementById('current-date');
         const prevDayBtn = document.getElementById('prev-day');
         const nextDayBtn = document.getElementById('next-day');
@@ -165,224 +150,258 @@
         const historyList = document.getElementById('history-list');
         const noRecordsEl = document.getElementById('no-records');
         const historyTitle = document.getElementById('history-title');
+        const startDaySelect = document.getElementById('start-day-select');
+        const resetBtn = document.getElementById('reset-btn');
 
-        // 状態
-        let currentUserId = null;
-        let userSettings = { startDay: 1 };
-        let currentDate = new Date();
-        let currentAmount = 0;
-        let isIncome = true;
-        let unsubscribe = null;
-        let stepAmount = 100;
+        // --- アプリの状態 ---
+        let transactions = []; // 全データ
+        let config = { startDay: 1 }; // 設定（デフォルト1日始まり）
+        let currentDate = new Date(); // 表示中の日付
+        let currentAmount = 0; // 入力中の金額
+        let isIncome = true; // 収入か支出か
+        let stepAmount = 100; // ボタンで増減する単位
 
-        // 日付フォーマット
+        // --- 初期化処理 ---
+        function initApp() {
+            populateStartDaySelect();
+            loadData(); // 保存されたデータを読み込む
+            updateDateDisplay();
+            updateUI(); // 画面を更新
+            setupPWA();
+        }
+
+        // --- データ読込・保存 ---
+        function loadData() {
+            const storedData = localStorage.getItem(STORAGE_KEY_DATA);
+            const storedConfig = localStorage.getItem(STORAGE_KEY_CONFIG);
+
+            if (storedData) transactions = JSON.parse(storedData);
+            if (storedConfig) {
+                config = JSON.parse(storedConfig);
+                startDaySelect.value = config.startDay;
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(transactions));
+            localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(config));
+        }
+
+        // --- 日付の操作 ---
         function formatDate(date) {
             const today = new Date();
-            today.setHours(0,0,0,0);
-            const targetDate = new Date(date);
-            targetDate.setHours(0,0,0,0);
-            if (today.getTime() === targetDate.getTime()) return '今日';
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
-            const week = ['日','月','火','水','木','金','土'][date.getDay()];
-            return `${month}月${day}日（${week}）`;
+            const d = new Date(date);
+            
+            // 時間を無視して日付だけで比較
+            const isToday = today.getFullYear() === d.getFullYear() && 
+                            today.getMonth() === d.getMonth() && 
+                            today.getDate() === d.getDate();
+
+            const month = d.getMonth() + 1;
+            const day = d.getDate();
+            const week = ['日','月','火','水','木','金','土'][d.getDay()];
+            
+            return isToday ? `今日 ${month}/${day}(${week})` : `${month}月${day}日(${week})`;
         }
 
         function updateDateDisplay(){
             const dateText = formatDate(currentDate);
             currentDateEl.textContent = dateText;
-            historyTitle.textContent = dateText === '今日' ? '今日の記録' : `${dateText}の記録`;
+            
+            // 履歴のタイトルも更新
+            const today = new Date();
+            const isToday = currentDate.getDate() === today.getDate() && 
+                            currentDate.getMonth() === today.getMonth();
+            historyTitle.textContent = isToday ? '今日の記録' : `${currentDate.getMonth()+1}/${currentDate.getDate()} の記録`;
         }
 
-        prevDayBtn.addEventListener('click', ()=>{ currentDate.setDate(currentDate.getDate()-1); updateDateDisplay(); listenToTransactions(); });
-        nextDayBtn.addEventListener('click', ()=>{ currentDate.setDate(currentDate.getDate()+1); updateDateDisplay(); listenToTransactions(); });
+        prevDayBtn.addEventListener('click', ()=>{ currentDate.setDate(currentDate.getDate()-1); updateDateDisplay(); updateUI(); });
+        nextDayBtn.addEventListener('click', ()=>{ currentDate.setDate(currentDate.getDate()+1); updateDateDisplay(); updateUI(); });
 
-        // 金額操作
-        function updateAmount(value){ currentAmount = Math.max(0, value); amountInput.value = currentAmount; }
-        amountButtons.forEach(btn=>{ btn.addEventListener('click', ()=>{
-            const amount = parseInt(btn.dataset.amount);
-            stepAmount = amount;
-            amountButtons.forEach(innerBtn=>{
-                innerBtn.classList.replace(innerBtn === btn ? 'btn-amount-unselected' : 'btn-amount-selected', innerBtn === btn ? 'btn-amount-selected' : 'btn-amount-unselected');
-            });
-            updateAmount(currentAmount + amount);
-        }); });
-        increaseBtn.addEventListener('click', ()=>updateAmount(currentAmount + stepAmount));
-        decreaseBtn.addEventListener('click', ()=>updateAmount(currentAmount - stepAmount));
+        // --- 入力・金額操作 ---
+        function updateAmount(value){ 
+            currentAmount = Math.max(0, value); 
+            amountInput.value = currentAmount; 
+        }
+
+        // 金額ボタン（100円、500円...）
+        amountButtons.forEach(btn=>{ 
+            btn.addEventListener('click', ()=>{
+                const amount = parseInt(btn.dataset.amount);
+                stepAmount = amount; // +ボタンの増減量もこれに合わせる
+                
+                // ボタンの見た目切替
+                amountButtons.forEach(b => b.classList.replace('btn-amount-selected', 'btn-amount-unselected'));
+                btn.classList.replace('btn-amount-unselected', 'btn-amount-selected');
+                
+                updateAmount(currentAmount + amount);
+            }); 
+        });
+
+        // +/- ボタン
+        increaseBtn.addEventListener('click', ()=> updateAmount(currentAmount + stepAmount));
+        decreaseBtn.addEventListener('click', ()=> updateAmount(currentAmount - stepAmount));
         amountInput.addEventListener('change', (e)=> updateAmount(parseInt(e.target.value)||0));
 
-        function toggleType(forceIncome = null){
-            isIncome = forceIncome !== null ? forceIncome : !isIncome;
+        // 収入/支出 切替
+        function toggleType() {
+            isIncome = !isIncome;
             if (isIncome){
-                typeToggleBtn.innerHTML = '+ 収入';
-                typeToggleBtn.classList.remove('bg-red-500','text-white');
-                typeToggleBtn.classList.add('bg-green-100','text-green-800');
+                typeToggleBtn.textContent = '+ 収入';
+                typeToggleBtn.className = 'py-3 text-lg font-semibold rounded-lg transition-colors duration-200 bg-green-100 text-green-800';
                 amountInput.classList.remove('text-red-500');
             } else {
-                typeToggleBtn.innerHTML = '- 支出';
-                typeToggleBtn.classList.remove('bg-green-100','text-green-800');
-                typeToggleBtn.classList.add('bg-red-500','text-white');
+                typeToggleBtn.textContent = '- 支出';
+                typeToggleBtn.className = 'py-3 text-lg font-semibold rounded-lg transition-colors duration-200 bg-red-100 text-red-600';
                 amountInput.classList.add('text-red-500');
             }
         }
-        typeToggleBtn.addEventListener('click', ()=>toggleType());
+        typeToggleBtn.addEventListener('click', toggleType);
 
-        // ログイン処理（ニックネーム入力 → 匿名ログイン）
-        loginBtn.addEventListener('click', async ()=>{
-            const nickname = nicknameInput.value.trim();
-            if (nickname.length === 0){ authError.textContent = 'ニックネームを入力してください。'; return; }
-            if (nickname.length > 15){ authError.textContent = 'ニックネームは15文字以内です。'; return; }
-            authError.textContent = '';
-            try{
-                const userCredential = await signInAnonymously(auth);
-                const uid = userCredential.user.uid;
-                currentUserId = uid;
+        // --- 記録保存 ---
+        saveBtn.addEventListener('click', () => {
+            if (currentAmount <= 0) return; // 0円なら何もしない
 
-                // ユーザー情報を作成または更新
-                const userDocRef = doc(db, 'users', uid);
-                const userSnap = await getDoc(userDocRef);
-                const startDay = parseInt(startDaySelect.value) || 1;
-                
-                if (!userSnap.exists()){
-                    // 新規ユーザーの場合、ドキュメントを新規作成
-                    await setDoc(userDocRef, { nickname, startDay, createdAt: serverTimestamp() });
-                    userSettings = { nickname, startDay };
-                } else {
-                    // 既存ユーザーの場合、月の開始日を更新
-                    await setDoc(userDocRef, { startDay }, { merge: true });
-                    // DBから読み込んだ設定に、今回選択した開始日を上書きして使用する
-                    userSettings = userSnap.data();
-                    userSettings.startDay = startDay; 
-                }
+            const y = currentDate.getFullYear();
+            const m = String(currentDate.getMonth()+1).padStart(2,'0');
+            const d = String(currentDate.getDate()).padStart(2,'0');
+            const dateString = `${y}-${m}-${d}`;
 
-                localStorage.setItem('okane-app-userid', uid);
-                initializeAppState(uid);
-            }catch(err){ console.error(err); authError.textContent = 'ログインに失敗しました。'; setTimeout(()=>authError.textContent='',3000); }
-        });
+            const newTx = {
+                id: Date.now().toString(36) + Math.random().toString(36).substring(2),
+                amount: currentAmount,
+                type: isIncome ? 'income' : 'expense',
+                date: dateString,
+                createdAt: Date.now()
+            };
 
-        logoutBtn.addEventListener('click', async ()=>{
-            try{ await signOut(auth); }catch(e){ console.error(e); }
-            localStorage.removeItem('okane-app-userid');
-            currentUserId = null;
-            if (unsubscribe) unsubscribe();
-            authContainer.classList.remove('hidden');
-            appContainer.classList.add('hidden');
-            nicknameInput.value = '';
-        });
-
-        function initializeAppState(userId){
-            currentUserId = userId;
-            authContainer.classList.add('hidden');
-            appContainer.classList.remove('hidden');
-            listenToTransactions();
-        }
-
-        async function saveTransaction(){
-            if (currentAmount <= 0){ entryError.textContent = '金額を入力してください。'; setTimeout(()=>entryError.textContent='',3000); return; }
-            const dateString = `${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2,'0')}-${String(currentDate.getDate()).padStart(2,'0')}`;
-            try{
-                await addDoc(collection(db, 'transactions'), {
-                    userId: currentUserId,
-                    amount: currentAmount,
-                    type: isIncome ? 'income' : 'expense',
-                    date: dateString,
-                    createdAt: serverTimestamp()
-                });
-                updateAmount(0);
-                amountButtons.forEach(btn=>{ btn.classList.replace('btn-amount-selected','btn-amount-unselected'); });
-                stepAmount = 100;
-            }catch(error){ console.error('Error adding document: ', error); entryError.textContent = '保存に失敗しました。'; setTimeout(()=>entryError.textContent='',3000); }
-        }
-        saveBtn.addEventListener('click', saveTransaction);
-
-        function listenToTransactions(){
-            if (!currentUserId) return;
-            if (unsubscribe) unsubscribe();
-            const q = query(collection(db, 'transactions'), where('userId', '==', currentUserId));
-            unsubscribe = onSnapshot(q, (querySnapshot)=>{
-                const transactions = [];
-                querySnapshot.forEach((d)=>{ transactions.push({ id: d.id, ...d.data() }); });
-                transactions.sort((a,b)=>{ if(!a.createdAt || !b.createdAt) return 0; return b.createdAt.seconds - a.createdAt.seconds; });
-                updateSummary(transactions);
-                updateHistory(transactions);
-            });
-        }
-
-        function updateSummary(transactions){
-            const viewDate = new Date(currentDate); // 表示しているカレンダーの日付を基準にする
-            const startDay = userSettings.startDay || 1;
+            transactions.push(newTx);
+            saveData();
             
-            // 表示日を基準に、その月（期間）の開始日を計算する
-            let periodStartYear = viewDate.getFullYear();
-            let periodStartMonth = viewDate.getMonth();
-            if (viewDate.getDate() < startDay){ 
-                periodStartMonth -= 1; 
-                if (periodStartMonth < 0){ 
-                    periodStartMonth = 11; 
-                    periodStartYear -= 1; 
-                } 
-            }
-            const periodStartDate = new Date(periodStartYear, periodStartMonth, startDay, 0, 0, 0, 0);
+            // 入力リセット
+            updateAmount(0);
+            amountButtons.forEach(b => b.classList.replace('btn-amount-selected', 'btn-amount-unselected'));
+            updateUI();
+        });
 
-            const normalizedViewDate = new Date(currentDate);
-            normalizedViewDate.setHours(0, 0, 0, 0); // 比較のために時刻を0に
+        // --- 集計と表示 ---
+        function updateUI() {
+            // 日付順に並べ替え（新しい順）
+            transactions.sort((a,b) => b.createdAt - a.createdAt);
 
-            let monthlyTotal = 0; 
+            // 表示中の日付の文字列
+            const y = currentDate.getFullYear();
+            const m = String(currentDate.getMonth()+1).padStart(2,'0');
+            const d = String(currentDate.getDate()).padStart(2,'0');
+            const viewingDateString = `${y}-${m}-${d}`;
+
+            // --- 集計計算 ---
+            let monthlyTotal = 0;
             let overallTotal = 0;
-            transactions.forEach(t=>{
-                const amount = t.type === 'income' ? t.amount : -t.amount;
-                const parts = t.date.split('-');
-                const transactionDate = new Date(parts[0], parts[1]-1, parts[2], 0, 0, 0, 0);
-                
-                // 「今までの合計」: 取引日が表示されている日以前なら加算
-                if (transactionDate <= normalizedViewDate) {
-                    overallTotal += amount;
-                }
-                
-                // 「今月の合計」: 期間の開始日から、表示している日までの合計を計算
-                if (transactionDate >= periodStartDate && transactionDate <= normalizedViewDate) {
-                    monthlyTotal += amount;
+            
+            // 今月の期間を計算（設定された開始日に基づく）
+            const startDay = parseInt(config.startDay);
+            let periodStartYear = currentDate.getFullYear();
+            let periodStartMonth = currentDate.getMonth();
+
+            // 表示日が開始日より前なら、前月を開始月とする（例: 25日締めで今日が10日の場合、前月25日〜）
+            if (currentDate.getDate() < startDay) {
+                periodStartMonth -= 1;
+            }
+            const periodStartDate = new Date(periodStartYear, periodStartMonth, startDay);
+            // 期間の終わりは翌月の開始日の前日だが、計算簡略化のため「期間開始日以降」のデータを対象にする
+            // （ただし、未来の日付のデータが入力されていると混ざるが、家計簿なので許容範囲とする）
+
+            const periodEndDate = new Date(periodStartYear, periodStartMonth + 1, startDay);
+
+            transactions.forEach(t => {
+                const val = t.type === 'income' ? t.amount : -t.amount;
+                overallTotal += val; // 全期間合計
+
+                // 日付文字列をDateオブジェクトに戻して比較
+                const tDateParts = t.date.split('-');
+                const tDate = new Date(tDateParts[0], tDateParts[1]-1, tDateParts[2]);
+
+                if (tDate >= periodStartDate && tDate < periodEndDate) {
+                    monthlyTotal += val;
                 }
             });
 
             monthlyTotalEl.textContent = `${monthlyTotal.toLocaleString()}円`;
             overallTotalEl.textContent = `${overallTotal.toLocaleString()}円`;
-        }
 
-        function updateHistory(allTransactions){
+            // --- 履歴リスト表示 ---
             historyList.innerHTML = '';
-            const dateString = `${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2,'0')}-${String(currentDate.getDate()).padStart(2,'0')}`;
-            const todaysTransactions = allTransactions.filter(t=>t.date === dateString);
-            if (todaysTransactions.length === 0){ noRecordsEl.classList.remove('hidden'); }
-            else {
+            const todaysData = transactions.filter(t => t.date === viewingDateString);
+
+            if (todaysData.length === 0) {
+                noRecordsEl.classList.remove('hidden');
+            } else {
                 noRecordsEl.classList.add('hidden');
-                todaysTransactions.forEach(t=>{
+                todaysData.forEach(t => {
                     const li = document.createElement('li');
-                    li.className = 'flex justify-between items-center p-3 rounded-lg mb-2';
-                    const textDiv = document.createElement('div');
-                    const amountText = `${t.amount.toLocaleString()}円`;
-                    if (t.type === 'income'){
-                        li.classList.add('bg-green-50');
-                        textDiv.innerHTML = `<span class="font-semibold text-green-700">収入</span><span class="text-lg font-bold text-green-700 ml-4">${amountText}</span>`;
-                    } else {
-                        li.classList.add('bg-red-50');
-                        textDiv.innerHTML = `<span class="font-semibold text-red-700">支出</span><span class="text-lg font-bold text-red-700 ml-4">-${amountText}</span>`;
-                    }
-                    const deleteButton = document.createElement('button');
-                    deleteButton.className = 'text-gray-400 hover:text-red-500 transition-colors p-2';
-                    deleteButton.innerHTML = `<i class="fas fa-trash-alt"></i>`;
-                    deleteButton.addEventListener('click', async ()=>{
-                        try{ await deleteDoc(doc(db, 'transactions', t.id)); } catch(e){ console.error('Error deleting document:', e); }
-                    });
-                    li.appendChild(textDiv);
-                    li.appendChild(deleteButton);
+                    li.className = 'flex justify-between items-center p-3 rounded-xl shadow-sm border border-gray-100 transition hover:shadow-md';
+                    
+                    // 色分け
+                    if (t.type === 'income') li.classList.add('bg-green-50');
+                    else li.classList.add('bg-red-50');
+
+                    const amountStr = t.amount.toLocaleString();
+                    const typeLabel = t.type === 'income' ? '収入' : '支出';
+                    const colorClass = t.type === 'income' ? 'text-green-700' : 'text-red-600';
+
+                    li.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold px-2 py-1 rounded bg-white bg-opacity-50 ${colorClass}">${typeLabel}</span>
+                            <span class="text-lg font-bold ${colorClass}">${t.type==='expense'?'-':''}${amountStr}円</span>
+                        </div>
+                    `;
+
+                    // 削除ボタン
+                    const delBtn = document.createElement('button');
+                    delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                    delBtn.className = 'w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-white';
+                    delBtn.onclick = () => {
+                        if(confirm('削除しますか？')) {
+                            transactions = transactions.filter(x => x.id !== t.id);
+                            saveData();
+                            updateUI();
+                        }
+                    };
+                    li.appendChild(delBtn);
                     historyList.appendChild(li);
                 });
             }
         }
 
-        // --- PWA設定 START ---
+        // --- 設定エリアの処理 ---
+        function populateStartDaySelect() {
+            for(let i=1; i<=28; i++){
+                const op = document.createElement('option');
+                op.value = i;
+                op.textContent = `${i}日`;
+                startDaySelect.appendChild(op);
+            }
+            startDaySelect.value = config.startDay;
+        }
+
+        startDaySelect.addEventListener('change', (e) => {
+            config.startDay = parseInt(e.target.value);
+            saveData();
+            updateUI(); // 集計が変わるので更新
+        });
+
+        resetBtn.addEventListener('click', () => {
+            if(confirm('【警告】\nすべてのデータが消えます。\n本当によろしいですか？')) {
+                localStorage.removeItem(STORAGE_KEY_DATA);
+                localStorage.removeItem(STORAGE_KEY_CONFIG);
+                location.reload();
+            }
+        });
+
+        // --- PWA設定 ---
         function setupPWA() {
+            // アイコン等のマニフェスト生成
             const manifestData = {
                 "name": "貯金と浪費。",
                 "short_name": "貯金と浪費",
@@ -390,51 +409,14 @@
                 "display": "standalone",
                 "background_color": "#ffffff",
                 "theme_color": "#2dd4bf",
-                "icons": [
-                    { "src": "chokin.jpg", "type": "image/jpeg", "sizes": "192x192" },
-                    { "src": "chokin.jpg", "type": "image/jpeg", "sizes": "512x512" }
-                ]
+                "icons": [{ "src": "chokin.jpg", "type": "image/jpeg", "sizes": "512x512" }]
             };
-            const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
-            const manifestURL = URL.createObjectURL(manifestBlob);
-            document.querySelector('#manifest').setAttribute('href', manifestURL);
-
-            // エラーの原因となっていたService Workerの登録処理を削除しました。
-        }
-        // --- PWA設定 END ---
-
-
-        // UI 初期化
-        function populateStartDaySelect(){ for (let i=1;i<=28;i++){ const option = document.createElement('option'); option.value = i; option.textContent = `${i}日`; startDaySelect.appendChild(option); } }
-
-        function initialize(){
-            populateStartDaySelect();
-            updateDateDisplay();
-            updateAmount(0);
-            toggleType(true);
-            setupPWA(); // PWAの設定を呼び出す
-            // 既に匿名ログインしているかチェック
-            onAuthStateChanged(auth, async (user)=>{
-                if (user){
-                    const uid = user.uid;
-                    currentUserId = uid;
-                    // ユーザー設定を読み込む
-                    const userDocSnap = await getDoc(doc(db, 'users', uid));
-                    if (userDocSnap.exists()){
-                        userSettings = userDocSnap.data();
-                    }
-                    initializeAppState(uid);
-                } else {
-                    // 認証していない場合はログイン画面を表示
-                    authContainer.classList.remove('hidden');
-                    appContainer.classList.add('hidden');
-                }
-            });
+            const blob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+            document.querySelector('#manifest').href = URL.createObjectURL(blob);
         }
 
-        initialize();
-
+        // 起動
+        initApp();
     </script>
 </body>
 </html>
-
